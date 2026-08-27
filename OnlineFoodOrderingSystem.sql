@@ -23,6 +23,7 @@ CREATE TABLE orders (
     customer_id INT,
     order_date DATE,
     total_amount DECIMAL(10,2),
+    order_status VARCHAR(30) NOT NULL DEFAULT 'PLACED',
 
     FOREIGN KEY (customer_id)
     REFERENCES customers(customer_id)
@@ -65,3 +66,6 @@ SELECT * FROM menu;
 select * from orders;
 
 SELECT * FROM order_items;
+
+
+
