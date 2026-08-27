@@ -20,64 +20,129 @@ public class OrderDAO {
 	        con = DBConnection.getConnection();
 	        con.setAutoCommit(false);
 
+	        // 1. Customer ID Validation
 	        System.out.print("Enter Customer ID: ");
 	        int customerId = sc.nextInt();
 
+	        if (!ValidationUtil.isValidPositiveNumber(customerId)) {
+
+	            System.out.println("Invalid Customer ID!");
+	            return;
+	        }
+
+	        // Check whether customer exists
+	        String customerSql = "SELECT customer_id FROM customers WHERE customer_id = ?";
+       
+	        PreparedStatement customerPs = con.prepareStatement(customerSql);
+            
+	        customerPs.setInt(1, customerId);
+
+	        ResultSet customerRs = customerPs.executeQuery();
+
+	        if (!customerRs.next()) {
+
+	            System.out.println("Customer ID not found!");
+	                    
+	            customerRs.close();
+	            customerPs.close();
+
+	            con.rollback();
+	            return;
+	        }
+
+	        customerRs.close();
+	        customerPs.close();
+
+	        // 2. Number of Items Validation
+
 	        System.out.print("How many different food items do you want to order? ");
+	                
 	        int itemCount = sc.nextInt();
 
-	        // Calculate total first
+	        if (!ValidationUtil.isValidPositiveNumber(itemCount)) {
+
+	            System.out.println("Number of food items must be greater than 0.");
+	            con.rollback();
+	            return;
+	        }
+
+	        // Store Food Details
 	        double totalAmount = 0;
 
-	        // Store food details temporarily
 	        int[] foodIds = new int[itemCount];
 	        int[] quantities = new int[itemCount];
 	        double[] prices = new double[itemCount];
 
+	        
+	        // 3. Food ID & Quantity Validation
+	   
 	        for (int i = 0; i < itemCount; i++) {
 
-	            System.out.println("\nFood Item " + (i + 1));
+	            System.out.println( "\nFood Item " + (i + 1));
+	                   
 
+	            // Food ID
 	            System.out.print("Enter Food ID: ");
-	            foodIds[i] = sc.nextInt();
+	            int foodId = sc.nextInt();
 
+	            if (!ValidationUtil.isValidPositiveNumber(foodId)) {
+
+	                System.out.println("Invalid Food ID!");
+	                con.rollback();
+	                return;
+	            }
+
+	            foodIds[i] = foodId;
+
+	            // Quantity
 	            System.out.print("Enter Quantity: ");
-	            quantities[i] = sc.nextInt();
+	            int quantity = sc.nextInt();
+
+	            if (!ValidationUtil.isValidPositiveNumber(quantity)) {
+
+	                System.out.println( "Quantity must be greater than 0.");
+	                con.rollback();
+	                return;
+	            }
+
+	            quantities[i] = quantity;
+
+	            // Check Food Availability
 
 	            String priceSql =
 	                    "SELECT price FROM menu " +
-	                    "WHERE food_id = ? AND available = true";
+	                    "WHERE food_id = ? " +
+	                    "AND available = true";
 
 	            PreparedStatement pricePs = con.prepareStatement(priceSql);
-	                    
-
+ 
 	            pricePs.setInt(1, foodIds[i]);
 
 	            ResultSet rs = pricePs.executeQuery();
 
 	            if (rs.next()) {
 
-	                prices[i] = rs.getDouble("price");
+	                prices[i] =  rs.getDouble("price");                
 
-	                totalAmount = totalAmount + (prices[i] * quantities[i]);
+	                totalAmount = totalAmount  + (prices[i] * quantities[i]);
+	                                     
 
-	                        
 	            } else {
 
-	            	System.out.println("Food item not available!");
+	                System.out.println("Food item not available!");
+	                rs.close();
+	                pricePs.close();
 
-	            	con.rollback();
-
-	            	rs.close();
-	            	pricePs.close();
-	            	return;
+	                con.rollback();
+	                return;
 	            }
 
 	            rs.close();
 	            pricePs.close();
 	        }
 
-	        // Insert Master record
+	        // 4. Insert Master Record
+	       
 	        String orderSql =
 	                "INSERT INTO orders " +
 	                "(customer_id, order_date, total_amount) " +
@@ -95,19 +160,19 @@ public class OrderDAO {
 
 	        ResultSet generatedKeys = orderPs.getGeneratedKeys();
 	                
-
 	        if (generatedKeys.next()) {
 
 	            int orderId = generatedKeys.getInt(1);
-
-	            // Insert Detail records
+	                    
+	            // 5. Insert Detail Records
+	           
 	            String itemSql =
 	                    "INSERT INTO order_items " +
 	                    "(order_id, food_id, quantity, item_price) " +
 	                    "VALUES (?, ?, ?, ?)";
 
-	            itemPs = con.prepareStatement(itemSql);
-
+	            itemPs =  con.prepareStatement(itemSql);
+	                  
 	            for (int i = 0; i < itemCount; i++) {
 
 	                itemPs.setInt(1, orderId);
@@ -116,35 +181,29 @@ public class OrderDAO {
 	                itemPs.setDouble(4, prices[i]);
 
 	                itemPs.executeUpdate();
-	                
-	                
 	            }
-	            
+
 	            con.commit();
-
-	            System.out.println("Transaction committed successfully!");
-
-	            System.out.println("\nOrder placed successfully!");
-	                    
-
-	            System.out.println("Order ID     : " + orderId);
-	                    
-
-	            System.out.println("Total Amount : ₹" + totalAmount);
-	                    
+	            System.out.println("\nTransaction committed successfully!");	                  
+	            System.out.println("\nOrder placed successfully!");	                   
+	            System.out.println( "Order ID     : " + orderId);                   
+	            System.out.println( "Total Amount : ₹" + totalAmount);	            
+	            System.out.println("Order Status : PLACED");
+	                   
 	        }
-
 	        generatedKeys.close();
 
-	    }  catch (Exception e) {
+
+	    } catch (Exception e) {
 
 	        try {
 
 	            if (con != null) {
-	                con.rollback();
-	            }
 
-	            System.out.println("Transaction rolled back!");
+	                con.rollback();
+	                System.out.println("Transaction rolled back!");
+	                        
+	            }
 
 	        } catch (Exception rollbackException) {
 
@@ -152,6 +211,8 @@ public class OrderDAO {
 	        }
 
 	        e.printStackTrace();
+
+
 	    } finally {
 
 	        try {
@@ -175,6 +236,100 @@ public class OrderDAO {
 	    }
 	}
 	
+	// Update Order Status
+	public void updateOrderStatus(int orderId, String status) {
+
+	    String sql =
+	            "UPDATE orders SET order_status = ? " +
+	            "WHERE order_id = ?";
+
+	    try {
+
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(sql);
+
+	        ps.setString(1, status);
+	        ps.setInt(2, orderId);
+
+	        int rows = ps.executeUpdate();
+
+	        if (rows > 0) {
+
+	            System.out.println("Order status updated successfully!");
+	                    
+	            System.out.println("Order ID     : " + orderId);
+	                    
+	            System.out.println("Current Status : " + status);
+	                    
+
+	        } else {
+
+	            System.out.println( "Order ID not found!");
+	                   
+	        }
+
+	        ps.close();
+	        con.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+	}
+	
+	// Track Order Status
+	public void trackOrderStatus(int orderId) {
+
+	    String sql =
+	            "SELECT o.order_id, c.customer_name, " +
+	            "o.order_date, o.total_amount, o.order_status " +
+	            "FROM orders o " +
+	            "JOIN customers c " +
+	            "ON o.customer_id = c.customer_id " +
+	            "WHERE o.order_id = ?";
+
+	    try {
+
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(sql);
+
+	        ps.setInt(1, orderId);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+
+	            System.out.println("\n========== ORDER STATUS ==========");
+	                    
+	            System.out.println("Order ID       : " + rs.getInt("order_id"));
+	                    	                    
+	            System.out.println("Customer       : " + rs.getString("customer_name"));
+	                                       
+	            System.out.println("Order Date     : " + rs.getDate("order_date"));
+	                    	                    
+	            System.out.println("Total Amount   : ₹" + rs.getDouble("total_amount"));
+	                    	                   
+	            System.out.println( "Order Status   : " + rs.getString("order_status"));
+	                   	                    
+	            System.out.println("==================================");
+	                    
+	        } else {
+
+	            System.out.println( "Order ID not found!");
+	                   
+	        }
+
+	        rs.close();
+	        ps.close();
+	        con.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+	}
 	// View Order History
 	public void viewOrderHistory(int customerId) {
 
@@ -199,50 +354,34 @@ public class OrderDAO {
 	        ps.setInt(1, customerId);
 
 	        ResultSet rs = ps.executeQuery();
-        
-
-	        
-	        System.out.println(
-	                "========== ORDER HISTORY ==========");
-
+         
+	        System.out.println("========== ORDER HISTORY ==========");
+	                
 	        boolean found = false;
 
 	        while (rs.next()) {
 
 	            found = true;
 
-	            System.out.println(
-	                    "Order ID     : "
-	                    + rs.getInt("order_id"));
-
-	            System.out.println(
-	                    "Order Date   : "
-	                    + rs.getDate("order_date"));
-
-	            System.out.println(
-	                    "Food Name    : "
-	                    + rs.getString("food_name"));
-
-	            System.out.println(
-	                    "Quantity     : "
-	                    + rs.getInt("quantity"));
-
-	            System.out.println(
-	                    "Item Price   : ₹"
-	                    + rs.getDouble("item_price"));
-
-	            System.out.println(
-	                    "Total Amount : ₹"
-	                    + rs.getDouble("total_amount"));
-
-	            System.out.println(
-	                    "-----------------------------------");
+	            System.out.println("Order ID     : " + rs.getInt("order_id"));
+	                    	                    
+	            System.out.println("Order Date   : " + rs.getDate("order_date"));
+	                    	                    
+	            System.out.println( "Food Name    : " + rs.getString("food_name"));
+	                   	                    
+	            System.out.println("Quantity     : " + rs.getInt("quantity"));
+	                    	                    
+	            System.out.println( "Item Price   : ₹" + rs.getDouble("item_price"));
+	                   	                    
+	            System.out.println( "Total Amount : ₹" + rs.getDouble("total_amount"));
+	                   	                    
+	            System.out.println( "-----------------------------------");
+	                   
 	        }
-
 	        if (!found) {
 
-	            System.out.println(
-	                    "No orders found for this customer.");
+	            System.out.println("No orders found for this customer.");
+	                    
 	        }
 
 	        rs.close();
@@ -277,9 +416,8 @@ public class OrderDAO {
 
 	        Connection con = DBConnection.getConnection();
 
-	        PreparedStatement ps =
-	                con.prepareStatement(sql);
-
+	        PreparedStatement ps = con.prepareStatement(sql);
+           
 	        ps.setInt(1, orderId);
 
 	        ResultSet rs = ps.executeQuery();
@@ -297,18 +435,12 @@ public class OrderDAO {
 
 	                found = true;
 
-	                System.out.println(
-	                        "Order ID : "
-	                        + rs.getInt("order_id"));
-
-	                System.out.println(
-	                        "Customer : "
-	                        + rs.getString("customer_name"));
-
-	                System.out.println(
-	                        "Date     : "
-	                        + rs.getDate("order_date"));
-
+	                System.out.println("Order ID : " + rs.getInt("order_id"));
+	                        	                        
+	                System.out.println("Customer : " + rs.getString("customer_name"));
+	                        	                        
+	                System.out.println("Date     : " + rs.getDate("order_date"));
+	                        	                        
 	                System.out.println("------------------------------------");
 	            }
 
@@ -328,18 +460,69 @@ public class OrderDAO {
 	        if (found) {
 
 	            System.out.println("------------------------------------");
-
-	            System.out.println(
-	                    "Total Amount = ₹" + totalAmount);
-
-	            System.out.println(
-	                    "====================================");
-
+	            System.out.println("Total Amount = ₹" + totalAmount);	                    
+	            System.out.println( "====================================");
+	                   
 	        } else {
 
 	            System.out.println("Order not found.");
 	        }
 
+	        rs.close();
+	        ps.close();
+	        con.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+	}
+	// View All Orders - Admin
+	public void viewAllOrders() {
+
+	    String sql =
+	            "SELECT o.order_id, c.customer_name, " +
+	            "o.order_date, o.total_amount, " +
+	            "o.order_status " +
+	            "FROM orders o " +
+	            "JOIN customers c " +
+	            "ON o.customer_id = c.customer_id " +
+	            "ORDER BY o.order_id";
+
+	    try {
+
+	        Connection con = DBConnection.getConnection();
+	                
+	        PreparedStatement ps = con.prepareStatement(sql);
+	                
+	        ResultSet rs = ps.executeQuery();
+	                
+	        System.out.println("\n========== ALL ORDERS ==========");
+	                
+	        boolean found = false;
+
+	        while (rs.next()) {
+
+	            found = true;
+
+	            System.out.println("Order ID     : "  + rs.getInt("order_id"));
+	                                  
+	            System.out.println("Customer     : " + rs.getString("customer_name"));
+	                    	                    
+	            System.out.println("Order Date   : " + rs.getDate("order_date"));
+	                    	                   
+	            System.out.println("Total Amount : ₹" + rs.getDouble("total_amount"));
+	                    	                    
+	            System.out.println( "Status       : "  + rs.getString("order_status"));
+	                   	                  
+	            System.out.println("--------------------------------");
+	                    
+	        }
+	        if (!found) {
+
+	            System.out.println( "No orders found.");
+	                   
+	        }
 	        rs.close();
 	        ps.close();
 	        con.close();
