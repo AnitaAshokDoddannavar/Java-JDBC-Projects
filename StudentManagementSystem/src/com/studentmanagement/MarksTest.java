@@ -8,8 +8,7 @@ public class MarksTest {
 
         // dao.addMarks(1, "Java", 95);
         
-        // dao.viewMarks();
-        
+        // dao.viewMarks();   
         dao.viewMarksWithStudentName();
     }
 }

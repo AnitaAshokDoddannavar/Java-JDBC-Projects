@@ -14,7 +14,6 @@ public class MarksDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, studentId);
@@ -26,7 +25,6 @@ public class MarksDAO {
             if (rows > 0) {
                 System.out.println("Marks added successfully!");
             }
-
             ps.close();
             con.close();
 
@@ -44,30 +42,23 @@ public class MarksDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Marks Details -----");
 
             while (rs.next()) {
 
-                System.out.println("Mark ID     : "
-                        + rs.getInt("mark_id"));
-
-                System.out.println("Student ID  : "
-                        + rs.getInt("student_id"));
-
-                System.out.println("Subject     : "
-                        + rs.getString("subject"));
-
-                System.out.println("Marks       : "
-                        + rs.getInt("marks"));
-
+                System.out.println("Mark ID     : " + rs.getInt("mark_id"));
+                        
+                System.out.println("Student ID  : " + rs.getInt("student_id"));
+                        
+                System.out.println("Subject     : " + rs.getString("subject"));
+                        
+                System.out.println("Marks       : " + rs.getInt("marks"));
+                        
                 System.out.println("-------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();
@@ -90,30 +81,23 @@ public class MarksDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Marks Details -----");
 
             while (rs.next()) {
 
-                System.out.println("Mark ID     : "
-                        + rs.getInt("mark_id"));
-
-                System.out.println("Student Name: "
-                        + rs.getString("student_name"));
-
-                System.out.println("Subject     : "
-                        + rs.getString("subject"));
-
-                System.out.println("Marks       : "
-                        + rs.getInt("marks"));
-
+                System.out.println("Mark ID     : " + rs.getInt("mark_id"));
+                        
+                System.out.println("Student Name: " + rs.getString("student_name"));
+                        
+                System.out.println("Subject     : " + rs.getString("subject"));
+                      
+                System.out.println("Marks       : " + rs.getInt("marks"));
+                        
                 System.out.println("-------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();

@@ -15,7 +15,6 @@ public class StudentDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, name);
@@ -27,7 +26,6 @@ public class StudentDAO {
             if (rows > 0) {
                 System.out.println("Student added successfully!");
             }
-
             ps.close();
             con.close();
 
@@ -45,9 +43,7 @@ public class StudentDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Student Details -----");
@@ -58,16 +54,12 @@ public class StudentDAO {
 
                 System.out.println("Name         : " + rs.getString("student_name"));
                         
-
                 System.out.println("Email        : " + rs.getString("email"));
                         
-
                 System.out.println("Phone        : " + rs.getString("phone"));
                         
-
                 System.out.println("---------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();
@@ -86,7 +78,6 @@ public class StudentDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, name);
@@ -119,7 +110,6 @@ public class StudentDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, studentId);
@@ -138,6 +128,34 @@ public class StudentDAO {
         } catch (Exception e) {
 
             e.printStackTrace();
+        }
+    }
+    
+    public boolean studentExists(int studentId) {
+
+        String sql = "SELECT student_id FROM students WHERE student_id = ?";
+
+        try {
+
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, studentId);
+
+            ResultSet rs = ps.executeQuery();
+
+            boolean exists = rs.next();
+
+            rs.close();
+            ps.close();
+            con.close();
+
+            return exists;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return false;
         }
     }
 }

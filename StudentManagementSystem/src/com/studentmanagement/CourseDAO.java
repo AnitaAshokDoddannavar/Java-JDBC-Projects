@@ -14,7 +14,6 @@ public class CourseDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, courseName);
@@ -25,7 +24,6 @@ public class CourseDAO {
             if (rows > 0) {
                 System.out.println("Course added successfully!");
             }
-
             ps.close();
             con.close();
 
@@ -43,27 +41,21 @@ public class CourseDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Course Details -----");
 
             while (rs.next()) {
 
-                System.out.println("Course ID   : "
-                        + rs.getInt("course_id"));
-
-                System.out.println("Course Name : "
-                        + rs.getString("course_name"));
-
-                System.out.println("Duration    : "
-                        + rs.getInt("duration") + " months");
-
+                System.out.println("Course ID   : " + rs.getInt("course_id"));
+                        
+                System.out.println("Course Name : " + rs.getString("course_name"));
+                        
+                System.out.println("Duration    : " + rs.getInt("duration") + " months");
+                        
                 System.out.println("--------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();
@@ -84,7 +76,6 @@ public class CourseDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, studentId);
@@ -95,7 +86,6 @@ public class CourseDAO {
             if (rows > 0) {
                 System.out.println("Student enrolled successfully!");
             }
-
             ps.close();
             con.close();
 
@@ -118,30 +108,23 @@ public class CourseDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Enrollment Details -----");
 
             while (rs.next()) {
 
-                System.out.println("Enrollment ID   : "
-                        + rs.getInt("enrollment_id"));
-
-                System.out.println("Student Name    : "
-                        + rs.getString("student_name"));
-
-                System.out.println("Course Name     : "
-                        + rs.getString("course_name"));
-
-                System.out.println("Enrollment Date : "
-                        + rs.getDate("enrollment_date"));
-
+                System.out.println("Enrollment ID   : "  + rs.getInt("enrollment_id"));
+                    
+                System.out.println("Student Name    : " + rs.getString("student_name"));
+                        
+                System.out.println("Course Name     : " + rs.getString("course_name"));
+                      
+                System.out.println("Enrollment Date : " + rs.getDate("enrollment_date"));
+                        
                 System.out.println("------------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();

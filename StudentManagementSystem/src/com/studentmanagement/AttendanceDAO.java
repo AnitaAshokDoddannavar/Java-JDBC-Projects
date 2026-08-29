@@ -16,7 +16,6 @@ public class AttendanceDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, studentId);
@@ -55,18 +54,14 @@ public class AttendanceDAO {
 
             while (rs.next()) {
 
-                System.out.println("Attendance ID   : "
-                        + rs.getInt("attendance_id"));
-
-                System.out.println("Student ID      : "
-                        + rs.getInt("student_id"));
-
-                System.out.println("Attendance Date : "
-                        + rs.getDate("attendance_date"));
-
-                System.out.println("Status          : "
-                        + rs.getString("status"));
-
+                System.out.println("Attendance ID   : " + rs.getInt("attendance_id"));
+                
+                System.out.println("Student ID      : " + rs.getInt("student_id"));
+                        
+                System.out.println("Attendance Date : " + rs.getDate("attendance_date"));
+                        
+                System.out.println("Status          : " + rs.getString("status"));
+                        
                 System.out.println("-------------------------------");
             }
 
@@ -101,21 +96,16 @@ public class AttendanceDAO {
 
             while (rs.next()) {
 
-                System.out.println("Attendance ID   : "
-                        + rs.getInt("attendance_id"));
-
-                System.out.println("Student Name    : "
-                        + rs.getString("student_name"));
-
-                System.out.println("Attendance Date : "
-                        + rs.getDate("attendance_date"));
-
-                System.out.println("Status          : "
-                        + rs.getString("status"));
-
+                System.out.println("Attendance ID   : " + rs.getInt("attendance_id"));
+                        
+                System.out.println("Student Name    : "  + rs.getString("student_name"));
+                    
+                System.out.println("Attendance Date : " + rs.getDate("attendance_date"));
+                       
+                System.out.println("Status          : " + rs.getString("status"));
+                        
                 System.out.println("-------------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();

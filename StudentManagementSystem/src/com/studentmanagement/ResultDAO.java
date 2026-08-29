@@ -20,7 +20,6 @@ public class ResultDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, studentId);

@@ -18,12 +18,10 @@ public class StudentTest {
                 "anitaA@gmail.com",
                 "9999999999"
         );*/
-        
-        
+          
         dao.deleteStudent(4);
         
         dao.viewStudents();
-        
-        
+             
     }
 }

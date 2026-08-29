@@ -45,7 +45,7 @@ public class Main {
                     break;
 
                 case 4:
-                    attendanceMenu(sc, attendanceDAO);
+                    attendanceMenu(sc, attendanceDAO, studentDAO);
                     break;
 
                 case 5:
@@ -53,9 +53,21 @@ public class Main {
                     break;
 
                 case 6:
+
                     System.out.print("Enter Student ID: ");
                     int studentId = sc.nextInt();
 
+                    // Student ID validation
+                    if (!ValidationUtil.isValidPositiveNumber(studentId)) {
+                        System.out.println("Invalid Student ID!");
+                        break;
+                    }
+                    // Check whether student exists
+                    if (!studentDAO.studentExists(studentId)) {
+                        System.out.println("Student ID not found! Please enter an existing Student ID." );
+                                                  
+                        break;
+                    }
                     resultDAO.generateResult(studentId);
                     break;
 
@@ -87,34 +99,61 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
+                sc.nextLine();
 
-                    sc.nextLine();
+                String name;
+                String email;
+                String phone;
+
+                // Name Validation
+                while (true) {
 
                     System.out.print("Enter Name: ");
-                    String name = sc.nextLine();
+                    name = sc.nextLine();
+
+                    if (ValidationUtil.isValidName(name)) {
+                        break;
+                    }
+                    System.out.println( "Invalid name! Use letters and spaces only." );                                       
+                }
+
+                // Email Validation
+                while (true) {
 
                     System.out.print("Enter Email: ");
-                    String email = sc.nextLine();
+                    email = sc.nextLine();
+
+                    if (ValidationUtil.isValidEmail(email)) {
+                        break;
+                    }
+
+                    System.out.println("Invalid email! Please enter a valid email.");                                           
+                }
+                // Phone Validation
+                while (true) {
 
                     System.out.print("Enter Phone: ");
-                    String phone = sc.nextLine();
+                    phone = sc.nextLine();
 
-                    dao.addStudent(name, email, phone);
-                    break;
+                    if (ValidationUtil.isValidPhone(phone)) {
+                        break;
+                    }
+                    System.out.println("Invalid phone! Enter exactly 10 digits.");                                           
+                }
 
+                dao.addStudent(name, email, phone);
+                break;
+                
                 case 2:
-
                     dao.viewStudents();
                     break;
 
                 case 3:
-
                     System.out.print("Enter Student ID: ");
                     int updateId = sc.nextInt();
-
                     sc.nextLine();
-
+                    
                     System.out.print("Enter New Name: ");
                     String updateName = sc.nextLine();
 
@@ -124,17 +163,10 @@ public class Main {
                     System.out.print("Enter New Phone: ");
                     String updatePhone = sc.nextLine();
 
-                    dao.updateStudent(
-                            updateId,
-                            updateName,
-                            updateEmail,
-                            updatePhone
-                    );
-
+                    dao.updateStudent(updateId, updateName, updateEmail, updatePhone );                                                                                                                                 
                     break;
 
                 case 4:
-
                     System.out.print("Enter Student ID: ");
                     int deleteId = sc.nextInt();
 
@@ -165,18 +197,38 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
+                sc.nextLine();
 
-                    sc.nextLine();
+                String courseName;
+                int duration;
+
+                // Course Name Validation
+                while (true) {
 
                     System.out.print("Enter Course Name: ");
-                    String courseName = sc.nextLine();
+                    courseName = sc.nextLine();
+
+                    if (ValidationUtil.isValidName(courseName)) {
+                        break;
+                    }
+                    System.out.println("Invalid course name! Use letters and spaces only.");                                          
+                }
+
+                // Duration Validation
+                while (true) {
 
                     System.out.print("Enter Duration (months): ");
-                    int duration = sc.nextInt();
+                    duration = sc.nextInt();
 
-                    dao.addCourse(courseName, duration);
-                    break;
+                    if (ValidationUtil.isValidDuration(duration)) {
+                        break;
+                    }
+                    System.out.println("Invalid duration! Enter between 1 and 60 months.");                                           
+                }
+
+                dao.addCourse(courseName, duration);
+                break;
 
                 case 2:
 
@@ -207,16 +259,26 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
 
-                    System.out.print("Enter Student ID: ");
-                    int studentId = sc.nextInt();
+                System.out.print("Enter Student ID: ");
+                int studentId = sc.nextInt();
 
-                    System.out.print("Enter Course ID: ");
-                    int courseId = sc.nextInt();
-
-                    dao.enrollStudent(studentId, courseId);
+                if (!ValidationUtil.isValidPositiveNumber(studentId)) {
+                    System.out.println("Invalid Student ID!");
                     break;
+                }
+
+                System.out.print("Enter Course ID: ");
+                int courseId = sc.nextInt();
+
+                if (!ValidationUtil.isValidPositiveNumber(courseId)) {
+                    System.out.println("Invalid Course ID!");
+                    break;
+                }
+
+                dao.enrollStudent(studentId, courseId);
+                break;
 
                 case 2:
 
@@ -233,10 +295,9 @@ public class Main {
     }
 
     // Attendance Menu
-    public static void attendanceMenu(
-            Scanner sc,
-            AttendanceDAO dao) {
-
+    public static void attendanceMenu(Scanner sc, AttendanceDAO dao, StudentDAO studentDAO) 
+    {
+                                  
         while (true) {
 
             System.out.println("\n----- Attendance Management -----");
@@ -250,26 +311,53 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
 
-                    System.out.print("Enter Student ID: ");
-                    int studentId = sc.nextInt();
+                System.out.print("Enter Student ID: ");
+                int studentId = sc.nextInt();
 
-                    sc.nextLine();
+                if (!ValidationUtil.isValidPositiveNumber(studentId)) {
+                    System.out.println("Invalid Student ID!");
+                    break;
+                }
+
+                sc.nextLine();
+
+                String date;
+
+                // Date Validation
+                while (true) {
 
                     System.out.print("Enter Date (YYYY-MM-DD): ");
-                    String date = sc.nextLine();
+                    date = sc.nextLine();
+
+                    if (ValidationUtil.isValidDate(date)) {
+                        break;
+                    }
+                    System.out.println("Invalid date! Use format YYYY-MM-DD." );                                          
+                }
+
+                String status;
+
+                // Attendance Status Validation
+                while (true) {
 
                     System.out.print("Enter Status (Present/Absent): ");
-                    String status = sc.nextLine();
+                    status = sc.nextLine();
 
-                    dao.markAttendance(
-                            studentId,
-                            date,
-                            status
-                    );
-
+                    if (ValidationUtil.isValidAttendanceStatus(status)) {
+                        break;
+                    }
+                    System.out.println("Invalid status! Enter Present or Absent." );                                          
+                }
+                
+                if (!studentDAO.studentExists(studentId)) {
+                    System.out.println("Student ID not found! Please enter an existing Student ID.");                                                  
                     break;
+                }
+
+                dao.markAttendance(studentId, date, status);                                                         
+                break;
 
                 case 2:
 
@@ -306,26 +394,58 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
 
-                    System.out.print("Enter Student ID: ");
-                    int studentId = sc.nextInt();
+                // Student ID Validation
+                System.out.print("Enter Student ID: ");
+                int studentId = sc.nextInt();
 
-                    sc.nextLine();
+                if (!ValidationUtil.isValidPositiveNumber(studentId)) {
+                    System.out.println("Invalid Student ID!");
+                    break;
+                }
+
+                // Check whether student exists
+                StudentDAO studentDAO = new StudentDAO();
+
+                if (!studentDAO.studentExists(studentId)) {
+                    System.out.println("Student ID not found! Please enter an existing Student ID." );                                      
+                    break;
+                }
+
+                sc.nextLine();
+
+                // Subject Validation
+                String subject;
+
+                while (true) {
 
                     System.out.print("Enter Subject: ");
-                    String subject = sc.nextLine();
+                    subject = sc.nextLine();
+
+                    if (ValidationUtil.isValidName(subject)) {
+                        break;
+                    }
+
+                    System.out.println("Invalid subject! Use letters and spaces only.");                 
+                }
+
+                // Marks Validation
+                int marks;
+
+                while (true) {
 
                     System.out.print("Enter Marks: ");
-                    int marks = sc.nextInt();
+                    marks = sc.nextInt();
 
-                    dao.addMarks(
-                            studentId,
-                            subject,
-                            marks
-                    );
+                    if (ValidationUtil.isValidMarks(marks)) {
+                        break;
+                    }
+                    System.out.println("Invalid marks! Enter marks between 0 and 100.");                                           
+                }
 
-                    break;
+                dao.addMarks(studentId, subject, marks);                                                     
+                break;
 
                 case 2:
 

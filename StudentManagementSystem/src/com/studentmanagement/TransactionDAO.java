@@ -5,10 +5,8 @@ import java.sql.PreparedStatement;
 
 public class TransactionDAO {
 
-    public void enrollStudentTransaction(
-            int studentId,
-            int courseId) {
-
+    public void enrollStudentTransaction(int studentId, int courseId) 
+    {
         String sql = "INSERT INTO enrollments "
                    + "(student_id, course_id, enrollment_date) "
                    + "VALUES (?, ?, CURDATE())";
@@ -29,13 +27,9 @@ public class TransactionDAO {
             ps.setInt(2, courseId);
 
             ps.executeUpdate();
-
-            // Save the transaction
             con.commit();
-
             System.out.println("Enrollment transaction committed successfully!");
                     
-
         } catch (Exception e) {
 
             try {
