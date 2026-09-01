@@ -15,19 +15,12 @@ public class DBConnection {
             String username = "root";
             String password = "YOUR_MYSQL_PASSWORD";
 
-            con = DriverManager.getConnection(
-                    url,
-                    username,
-                    password
-            );
-
-            
-
+            con = DriverManager.getConnection(url,  username, password);
+                                                                     
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-
         return con;
     }
 }

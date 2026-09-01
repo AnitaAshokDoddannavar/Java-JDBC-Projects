@@ -6,18 +6,15 @@ import java.sql.ResultSet;
 
 public class ProductDAO {
 
-    // Add Product
-    public void addProduct(String productName, double price,
-                           int quantity, int supplierId) {
-
+    public void addProduct(String productName, double price, int quantity, int supplierId) 
+    {
+                           
         String sql = "INSERT INTO products "
                    + "(product_name, price, quantity, supplier_id) "
                    + "VALUES (?, ?, ?, ?)";
-
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, productName);
@@ -30,7 +27,6 @@ public class ProductDAO {
             if (rows > 0) {
                 System.out.println("Product added successfully!");
             }
-
             ps.close();
             con.close();
 
@@ -40,7 +36,6 @@ public class ProductDAO {
         }
     }
     
- // View Products
     public void viewProducts() {
 
         String sql = "SELECT * FROM products";
@@ -48,33 +43,24 @@ public class ProductDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             System.out.println("----- Product Details -----");
-
             while (rs.next()) {
 
-                System.out.println("Product ID   : "
-                        + rs.getInt("product_id"));
-
-                System.out.println("Product Name : "
-                        + rs.getString("product_name"));
-
-                System.out.println("Price        : "
-                        + rs.getDouble("price"));
-
-                System.out.println("Quantity     : "
-                        + rs.getInt("quantity"));
-
-                System.out.println("Supplier ID  : "
-                        + rs.getInt("supplier_id"));
-
+                System.out.println("Product ID   : " + rs.getInt("product_id"));
+                        
+                System.out.println("Product Name : " + rs.getString("product_name"));
+                        
+                System.out.println("Price        : "  + rs.getDouble("price"));
+                      
+                System.out.println("Quantity     : " + rs.getInt("quantity"));
+                        
+                System.out.println("Supplier ID  : " + rs.getInt("supplier_id"));
+                        
                 System.out.println("---------------------------");
             }
-
             rs.close();
             ps.close();
             con.close();
@@ -85,7 +71,6 @@ public class ProductDAO {
         }
     }
     
- // Update Stock
     public void updateStock(int productId, int newQuantity) {
 
         String sql = "UPDATE products SET quantity = ? "
@@ -94,14 +79,12 @@ public class ProductDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setInt(1, newQuantity);
             ps.setInt(2, productId);
 
             int rows = ps.executeUpdate();
-
             if (rows > 0) {
 
                 System.out.println("Stock updated successfully!");
@@ -110,7 +93,6 @@ public class ProductDAO {
 
                 System.out.println("Product not found!");
             }
-
             ps.close();
             con.close();
 
@@ -120,7 +102,6 @@ public class ProductDAO {
         }
     }
     
- // Record Sale
     public void recordSale(int productId, int quantitySold) {
 
         String selectSql = "SELECT price, quantity "
@@ -142,11 +123,8 @@ public class ProductDAO {
         try {
 
             con = DBConnection.getConnection();
-
             selectPs = con.prepareStatement(selectSql);
-
             selectPs.setInt(1, productId);
-
             ResultSet rs = selectPs.executeQuery();
 
             if (rs.next()) {
@@ -161,7 +139,6 @@ public class ProductDAO {
                     rs.close();
                     selectPs.close();
                     con.close();
-
                     return;
                 }
 
@@ -220,7 +197,6 @@ public class ProductDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
 
             // Product 1
@@ -256,8 +232,7 @@ public class ProductDAO {
             e.printStackTrace();
         }
     }
-    
- // Generate Inventory Report
+
     public void generateReport() {
 
         String sql = "SELECT "
@@ -271,49 +246,36 @@ public class ProductDAO {
         try {
 
             Connection con = DBConnection.getConnection();
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
 
-                int totalProducts =
-                        rs.getInt("total_products");
-
-                int totalStock =
-                        rs.getInt("total_stock");
-
-                double averagePrice =
-                        rs.getDouble("average_price");
-
-                double highestPrice =
-                        rs.getDouble("highest_price");
-
-                double lowestPrice =
-                        rs.getDouble("lowest_price");
-
+                int totalProducts =  rs.getInt("total_products");
+                      
+                int totalStock = rs.getInt("total_stock");
+                        
+                double averagePrice = rs.getDouble("average_price");
+                        
+                double highestPrice = rs.getDouble("highest_price");
+                        
+                double lowestPrice = rs.getDouble("lowest_price");
+                        
                 System.out.println("----- Inventory Report -----");
 
                 System.out.println("Total Products : " + totalProducts);
                         
-
                 System.out.println("Total Stock    : " + totalStock);
                         
-
                 System.out.println( "Average Price  : " + averagePrice);
                        
-
                 System.out.println("Highest Price  : " + highestPrice);
-
-                        
+                    
                 System.out.println("Lowest Price   : " + lowestPrice);
                         
-
                 System.out.println( "----------------------------");
                        
             }
-
             rs.close();
             ps.close();
             con.close();
@@ -321,6 +283,31 @@ public class ProductDAO {
         } catch (Exception e) {
 
             e.printStackTrace();
+        }
+    }
+    
+ // Check whether Supplier ID exists
+    public boolean supplierExists(int supplierId) {
+
+        String sql = "SELECT supplier_id FROM suppliers WHERE supplier_id = ?";
+
+        try {
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, supplierId);
+            ResultSet rs = ps.executeQuery();
+
+            boolean exists = rs.next();
+
+            rs.close();
+            ps.close();
+            con.close();
+
+            return exists;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

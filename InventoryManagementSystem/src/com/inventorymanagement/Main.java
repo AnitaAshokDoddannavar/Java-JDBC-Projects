@@ -9,7 +9,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         ProductDAO dao = new ProductDAO();
-
+        
         while (true) {
 
             System.out.println("\n========================================");
@@ -29,87 +29,157 @@ public class Main {
 
             switch (choice) {
 
-                case 1:
+            case 1:
 
-                    sc.nextLine();
+                sc.nextLine();
+                String productName;
+
+                while (true) {
 
                     System.out.print("Enter Product Name: ");
-                    String productName = sc.nextLine();
+                    productName = sc.nextLine();
+
+                    if (ValidationUtil.isValidProductName(productName)) {
+                        break;
+                    }
+
+                    System.out.println("Invalid product name! Use letters, numbers and spaces only.");                          
+                }
+
+                double price;
+
+                while (true) {
 
                     System.out.print("Enter Price: ");
-                    double price = sc.nextDouble();
+                    price = sc.nextDouble();
+
+                    if (ValidationUtil.isValidPrice(price)) {
+                        break;
+                    }
+                    System.out.println("Invalid price! Price must be greater than 0.");
+                            
+                }
+
+                int quantity;
+
+                while (true) {
 
                     System.out.print("Enter Quantity: ");
-                    int quantity = sc.nextInt();
+                    quantity = sc.nextInt();
+
+                    if (ValidationUtil.isValidQuantity(quantity)) {
+                        break;
+                    }
+                    System.out.println("Invalid quantity! Quantity must be greater than 0.");                        
+                }
+
+                int supplierId;
+
+                while (true) {
 
                     System.out.print("Enter Supplier ID: ");
-                    int supplierId = sc.nextInt();
+                    supplierId = sc.nextInt();
 
-                    dao.addProduct(
-                            productName,
-                            price,
-                            quantity,
-                            supplierId
-                    );
+                    if (!ValidationUtil.isValidId(supplierId)) {
+                        System.out.println("Invalid Supplier ID! Enter a positive number.");        
+                        continue;
+                    }
 
+                    if (!dao.supplierExists(supplierId)) {
+                        System.out.println("Supplier ID not found! Please enter an existing Supplier ID.");                                
+                        continue;
+                    }
                     break;
+                }
+                dao.addProduct(productName, price, quantity, supplierId );                                                                                                          
+                break;
 
-                case 2:
+                
+            case 2:
 
                     dao.viewProducts();
                     break;
+          
+                 
+            case 3:
 
-                case 3:
+                int productId;
+                while (true) {
 
                     System.out.print("Enter Product ID: ");
-                    int productId = sc.nextInt();
+                    productId = sc.nextInt();
+
+                    if (ValidationUtil.isValidId(productId)) {
+                        break;
+                    }
+                    System.out.println("Invalid Product ID! Enter a positive number.");                          
+                }
+
+                int newQuantity;
+
+                while (true) {
 
                     System.out.print("Enter New Quantity: ");
-                    int newQuantity = sc.nextInt();
+                    newQuantity = sc.nextInt();
 
-                    dao.updateStock(
-                            productId,
-                            newQuantity
-                    );
+                    if (ValidationUtil.isValidQuantity(newQuantity)) {
+                        break;
+                    }
+                    System.out.println("Invalid quantity! Quantity must be greater than 0.");                          
+                }
+                dao.updateStock( productId, newQuantity );                                                           
+                break;
+           
+            case 4:
 
-                    break;
+                int saleProductId;
 
-                case 4:
+                while (true) {
 
                     System.out.print("Enter Product ID: ");
-                    int saleProductId = sc.nextInt();
+                    saleProductId = sc.nextInt();
+
+                    if (ValidationUtil.isValidId(saleProductId)) {
+                        break;
+                    }
+                    System.out.println("Invalid Product ID! Enter a positive number.");                         
+                }
+
+                int quantitySold;
+
+                while (true) {
 
                     System.out.print("Enter Quantity Sold: ");
-                    int quantitySold = sc.nextInt();
+                    quantitySold = sc.nextInt();
 
-                    dao.recordSale(
-                            saleProductId,
-                            quantitySold
-                    );
+                    if (ValidationUtil.isValidQuantity(quantitySold)) {
+                        break;
+                    }
+                    System.out.println("Invalid quantity! Quantity sold must be greater than 0.");                         
+                }
+                dao.recordSale(saleProductId, quantitySold);                                      
+                break;
 
-                    break;
+            case 5:
 
-                case 5:
+                dao.addProductsBatch();
+                break;
 
-                    dao.addProductsBatch();
-                    break;
+            case 6:
 
-                case 6:
+                dao.generateReport();
+                break;
+         
+            case 7:
 
-                    dao.generateReport();
-                    break;
+                System.out.println("Thank you for using Inventory Management System!");                      
+                sc.close();
+                System.exit(0);
+                break;
 
-                case 7:
 
-                    System.out.println("Thank you for using Inventory Management System!");
-                            
-                    
-                    sc.close();
-                    System.exit(0);
-
-                default:
-
-                    System.out.println("Invalid choice!");
+            default:
+                System.out.println("Invalid choice!");
             }
         }
     }
